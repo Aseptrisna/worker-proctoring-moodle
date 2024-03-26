@@ -91,10 +91,10 @@ def detect_faces_in_image(filepath):
 
             data_to_save = {
                      "userID": user_id,
-                     "username": username,
                      "filename": filename,
                      "firstname": firstname,
                      "lastname": lastname,
+                     "username": username,
                      "image_url": image_url,
                      "warning": warning,
                      "timestamp": timestamp,
