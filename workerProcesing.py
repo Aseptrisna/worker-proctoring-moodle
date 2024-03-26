@@ -19,7 +19,7 @@ def DbConnection():
     myclient = pymongo.MongoClient(db)
     db = myclient["engagement"]
     collection_log = db["log"]
-    collection_report = db["resultproctoring"]
+    collection_report = db["resultproctorings"]
     return collection_report, collection_log
 
 report, log = DbConnection()
@@ -167,7 +167,7 @@ if downloaded_image_path:
     process_time = dt2 - dt
     print("Process time:", process_time)
 
-schedule.every(10).seconds.do(job)
+schedule.every(60).seconds.do(job)
 
 while True:
     schedule.run_pending()
