@@ -157,21 +157,21 @@ def delete_image(image_path):
         print("The file does not exist.")
 
 # URL from which to fetch the JSON data
-def job():
-    url = "https://engagement.pptik.id/api/v1/proctoring/row/image"
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        user_id = data.get('userID', 'No userID provided')
-        image_url = data.get('imageURL', 'No image URL provided')
-        username = data.get('username', 'No username provided')
-        firstname = data.get('firstname', 'No firstname provided')
-        lastname = data.get('lastname', 'No lastname provided')
-        timestamp = data.get('timestamp', 'No timestamp provided')
-        date_time = data.get('datetime', 'No dateTime provided')
-        id_courses = data.get('idCourses', 'No id_courses provided')
-        course_name = data.get('courseName', 'No course_name provided')
-        create_at = data.get('createdAt', 'No createdAt provided')
+# def job():
+url = "https://engagement.pptik.id/api/v1/proctoring/row/image"
+response = requests.get(url)
+if response.status_code == 200:
+    data = response.json()
+    user_id = data.get('userID', 'No userID provided')
+    image_url = data.get('imageURL', 'No image URL provided')
+    username = data.get('username', 'No username provided')
+    firstname = data.get('firstname', 'No firstname provided')
+    lastname = data.get('lastname', 'No lastname provided')
+    timestamp = data.get('timestamp', 'No timestamp provided')
+    date_time = data.get('datetime', 'No dateTime provided')
+    id_courses = data.get('idCourses', 'No id_courses provided')
+    course_name = data.get('courseName', 'No course_name provided')
+    create_at = data.get('createdAt', 'No createdAt provided')
 
 else:
     print(f"Failed to fetch data. HTTP Status Code: {response.status_code}")
@@ -182,7 +182,7 @@ filename = f"{username}"
 # Ensure the save directory exists
 if not os.path.exists(save_path):
     os.makedirs(save_path)
-detect_faces_in_image(image_url, save_path, username, user_id, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at)
+
 # Step 1: Download the image
 current_time = time.time()
 dt = datetime.fromtimestamp(current_time)
