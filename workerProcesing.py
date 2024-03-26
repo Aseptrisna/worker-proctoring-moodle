@@ -127,7 +127,7 @@ def delete_image(image_path):
     else:
         print("The file does not exist.")
 
-def job():
+# def job():
     url = "https://engagement.pptik.id/api/v1/proctoring/row/image"
     response = requests.get(url)
     if response.status_code == 200:
@@ -167,8 +167,8 @@ if downloaded_image_path:
     process_time = dt2 - dt
     print("Process time:", process_time)
 
-schedule.every(30).seconds.do(job)
+# schedule.every(30).seconds.do(job)
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
