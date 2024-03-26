@@ -157,6 +157,7 @@ def delete_image(image_path):
         print("The file does not exist.")
 
 # URL from which to fetch the JSON data
+def job():
 url = "https://engagement.pptik.id/api/v1/proctoring/row/image"
 response = requests.get(url)
 if response.status_code == 200:
@@ -199,3 +200,10 @@ if downloaded_image_path:
     print("Process time:", process_time)
     # Step 3: Delete the image (if you wish to do so after processing)
     #delete_image(downloaded_image_path)
+
+schedule.every(30).seconds.do(job)
+
+while True:
+
+    schedule.run_pending()
+    time.sleep(1)
