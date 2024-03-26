@@ -20,12 +20,9 @@ def DbConnection():
     collection_report = db["resultproctorings"]
     return collection_report, collection_log
 
-report, log = DbConnection()
-
 def setup_session(retry_count=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504]):
     session = requests.Session()
-    retries = Retry(total=retry_count, backoff_factor=backoff_factor,
-                    status_forcelist=status_forcelist)
+    retries = Retry(total=retry_count, backoff_factor=backoff_factor, status_forcelist=status_forcelist)
     session.mount('https://', HTTPAdapter(max_retries=retries))
     return session
 
@@ -40,8 +37,7 @@ def download_image(image_url, save_path, filename):
         print(f"Failed to download the image. HTTP Status Code: {response.status_code}")
         return None
 
-def detect_faces_in_image(filepath):
-    report, log = DbConnection()
+def detect_faces_in_image(image_url, save_path, username, user_id, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at):
     image_directory = "D:/worker/Worker_2022/worker-proctoring-moodle/picture"
     known_face_encodings = []
     known_face_names = []
@@ -55,7 +51,7 @@ def detect_faces_in_image(filepath):
                 known_face_names.append(os.path.splitext(filename)[0])
 
     try:
-        full_path = download_image(image_url, save_path, filename)
+        full_path = download_image(image_url, save_path, username)
         unknown_image = face_recognition.load_image_file(full_path)
         face_locations = face_recognition.face_locations(unknown_image)
         face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
@@ -69,7 +65,6 @@ def detect_faces_in_image(filepath):
             best_match_index = np.argmin(face_distances)
             if matches[best_match_index]:
                 name = known_face_names[best_match_index]
-
                 current_time = time.time()
                 dt = datetime.fromtimestamp(current_time)
                 fdt2 = dt.strftime("%d-%m-%Y %H:%M:%S")
@@ -140,16 +135,11 @@ def job():
         course_name = data.get('courseName', 'No course_name provided')
         create_at = data.get('createdAt', 'No createdAt provided')
         print("Username:", username, "userID:", user_id, "imageURL:", image_url, "firstname:", firstname, "lastname:", lastname, "timestamp:", timestamp, "datetime:", date_time, "idCourses:", id_courses, "courseName:", course_name, "createdAt:", create_at)
-    return username, user_id, image_url, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at
+        save_path = "D:/worker/Worker_2022/worker-proctoring-moodle/process_image"
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
+        detect_faces_in_image(image_url, save_path, username, user_id, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at)
 
-save_path = "D:/worker/Worker_2022/worker-proctoring-moodle/process_image"
+schedule.every(30).seconds.do(job)
 
-def process_job():
-    # Panggil fungsi job() untuk mendapatkan data terbaru
-    username, user_id, image_url, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at = job()
-
-    # Step 1: Download the image from the URL
-    current_time = time.time()
-    dt = datetime.fromtimestamp(current_time)
-    start_time = dt.strftime("%d-%m-%Y %H:%M:%S")
-    downloaded_image_path = download_image
+while True:

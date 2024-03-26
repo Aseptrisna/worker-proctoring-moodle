@@ -14,7 +14,7 @@ import os
 import pymongo
 import schedule
 
-def job():
+# def job():
 def DbConnection():
     db = "mongodb://engagement:ZWlbWVudA5nYWd!@database2.pptik.id/?authMechanism=DEFAULT&authSource=engagement"
     myclient = pymongo.MongoClient(db)
