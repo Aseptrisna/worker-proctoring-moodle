@@ -145,4 +145,4 @@ def job():
         create_at = data.get('createdAt', 'No createdAt provided')
         print("Username:", username, "userID:", user_id, "imageURL:", image_url, "firstname:", firstname, "lastname:", lastname, "timestamp:", timestamp, "datetime:", date_time, "idCourses:", id_courses, "courseName:", course_name, "createdAt:", create_at)
 
-        save_path = "D:/worker/Worker_2022/worker-proctoring
+        save_path = "D:/worker/Worker_2022/worker-proctoring"
