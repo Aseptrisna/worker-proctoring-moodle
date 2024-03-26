@@ -109,7 +109,7 @@ def detect_faces_in_image(filepath):
         del draw
 
         output_filename = username + str_fdt2
-        output_path = os.path.join("C:\ASEP TRISNA SETIAWAN\RISET\worker-proctoring\identified_image", f"{output_filename}.jpg")
+        output_path = os.path.join("V:\proctoring", f"{output_filename}.jpg")
         pil_image.save(output_path)
         print("Identified image saved:", output_path, "time", datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
 
@@ -139,7 +139,7 @@ def job():
         course_name = data.get('courseName', 'No course_name provided')
         create_at = data.get('createdAt', 'No createdAt provided')
 
-        save_path = "C:\ASEP TRISNA SETIAWAN\RISET\worker-proctoring\process_image"
+        save_path = "D:\worker\Worker_2022\worker-proctoring-moodle\process_image"
         filename = f"{username}"
         if not os.path.exists(save_path):
             os.makedirs(save_path)
