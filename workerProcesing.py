@@ -22,7 +22,7 @@ def DbConnection():
     collection_report = db["resultproctoring"]
     return collection_report, collection_log
 
-report,log = DbConnection()
+report, log = DbConnection()
 
 def setup_session(retry_count=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504]):
     session = requests.Session()
@@ -43,112 +43,83 @@ def download_image(image_url, save_path, filename):
         return None
 
 def detect_faces_in_image(filepath):
-    report,log = DbConnection()
-    image_directory = "D:/mdl_work/picture"
+    report, log = DbConnection()
+    image_directory = "D:/worker/Worker_2022/worker-proctoring-moodle/picture"
     known_face_encodings = []
     known_face_names = []
     for filename in os.listdir(image_directory):
-        if filename.endswith((".jpg", ".jpeg", ".png")):  # Check for image files
+        if filename.endswith((".jpg", ".jpeg", ".png")):
             filepath = os.path.join(image_directory, filename)
-            #print (filepath)
-
-            # Load the image
             image = face_recognition.load_image_file(filepath)
-            # Attempt to encode the face
             face_encodings = face_recognition.face_encodings(image)
-            #print (face_encodings)
-            
             if face_encodings:
-                # If a face is found, append the encoding and name
                 known_face_encodings.append(face_encodings[0])
-                #print (known_face_encodings)
-                # Assuming the person's name is the filename without the extension
                 known_face_names.append(os.path.splitext(filename)[0])
-            else:
-                pass
 
     try:
         full_path = download_image(image_url, save_path, filename)
+        #print(full_path)
         unknown_image = face_recognition.load_image_file(full_path)
-
-        # Find all the faces and face encodings in the unknown image
         face_locations = face_recognition.face_locations(unknown_image)
         face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
-        #print (face_encodings)
-
         pil_image = Image.fromarray(unknown_image)
-        # Create a Pillow ImageDraw Draw instance to draw with
         draw = ImageDraw.Draw(pil_image)
 
-    # Loop through each face found in the unknown image
         for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-            # See if the face is a match for the known face(s)
             matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
             name = "Unknown"
-
-        # Or instead, use the known face with the smallest distance to the new face
-            face_distances = face_recognition.face_distance(
-            known_face_encodings, face_encoding)
+            face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
             best_match_index = np.argmin(face_distances)
             if matches[best_match_index]:
                 name = known_face_names[best_match_index]
+
                 current_time = time.time()
                 dt = datetime.fromtimestamp(current_time)
                 fdt2 = dt.strftime("%d-%m-%Y %H:%M:%S")
                 str_fdt2 = dt.strftime("%Y%m%d%H%M%S")
-                print("Face detected:", user_id, firstname, lastname,"time:", fdt2)   
+                print("Face detected:", user_id, firstname, lastname, "time:", fdt2)
             else:
                 print("No face detected")
-            warning=False
-
+            warning = False
             if name == username:
-               warning= False
+                warning = False
             else:
-               warning= True
+                warning = True
             
-        # Draw a box around the face using the Pillow module
             draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
             caption = fdt2 + "|" + name 
-            # Draw a label with a name below the face
             font = ImageFont.load_default()
             text_width = draw.textlength(caption)
-            draw.text((left + 6, bottom  - 5),
-                    caption, fill=(255, 255, 255))
+            draw.text((left + 6, bottom - 5), caption, fill=(255, 255, 255))
             pil_image.show()
-            
-            # Save to MongoDB
-            data_to_save = {
-                        "userID": user_id,
-                        "filename": filename,
-                        "firstname": firstname,
-                        "lastname": lastname,
-                        "username": username,
-                        "image_url": image_url,
-                        "warning": warning,
-                        "timestamp": timestamp,
-                        "datetime": date_time,
-                        "idCourses": id_courses,
-                        "courseName": course_name,
-                        "createAt": create_at
-                }
-                # Insert into the MongoDB collection
 
+            data_to_save = {
+                     "userID": user_id,
+                     "filename": filename,
+                     "firstname": firstname,
+                     "lastname": lastname,
+                     "username": username,
+                     "image_url": image_url,
+                     "warning": warning,
+                     "timestamp": timestamp,
+                     "datetime": date_time,
+                     "idCourses": id_courses,
+                     "courseName": course_name,
+                     "createAt": create_at
+            }
             report.insert_one(data_to_save)
             print("Data saved to MongoDB")
 
-    # Remove the drawing library from memory as per the Pillow docs
         del draw
 
-    # You can also save a copy of the new image to disk if you want by uncommenting this line
-        output_filename = username + str_fdt2
-        output_path = os.path.join("D:/mdl_work/identified_image", f"{output_filename}.jpg")
+        output_filename = username + "_" + timestamp
+        output_path = os.path.join("V:/proctoring", f"{output_filename}.jpg")
         pil_image.save(output_path)
         print("Identified image saved:", output_path, "time", datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
-    
-    except PIL.UnidentifiedImageError:
-            print(f"Cannot identify image file {image_url}") 
 
-   
+    except PIL.UnidentifiedImageError:
+        print(f"Cannot identify image file {image_url}")
+
 def delete_image(image_path):
     if os.path.exists(image_path):
         os.remove(image_path)
@@ -156,46 +127,48 @@ def delete_image(image_path):
     else:
         print("The file does not exist.")
 
-# URL from which to fetch the JSON data
-url = "https://engagement.pptik.id/api/v1/proctoring/row/image"
-response = requests.get(url)
-if response.status_code == 200:
-    data = response.json()
-    user_id = data.get('userID', 'No userID provided')
-    image_url = data.get('imageURL', 'No image URL provided')
-    username = data.get('username', 'No username provided')
-    firstname = data.get('firstname', 'No firstname provided')
-    lastname = data.get('lastname', 'No lastname provided')
-    timestamp = data.get('timestamp', 'No timestamp provided')
-    date_time = data.get('datetime', 'No dateTime provided')
-    id_courses = data.get('idCourses', 'No id_courses provided')
-    course_name = data.get('courseName', 'No course_name provided')
-    create_at = data.get('createdAt', 'No createdAt provided')
+def job():
+    url = "https://engagement.pptik.id/api/v1/proctoring/row/image"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        username = data.get('username', 'No username provided')
+        user_id = data.get('userID', 'No userID provided')
+        image_url = data.get('imageURL', 'No image URL provided')
+        firstname = data.get('firstname', 'No firstname provided')
+        lastname = data.get('lastname', 'No lastname provided')
+        timestamp = data.get('timestamp', 'No timestamp provided')
+        date_time = data.get('datetime', 'No dateTime provided')
+        id_courses = data.get('idCourses', 'No id_courses provided')
+        course_name = data.get('courseName', 'No course_name provided')
+        create_at = data.get('createdAt', 'No createdAt provided')
+        print("Username:", username, "userID:", user_id, "imageURL:", image_url, "firstname:", firstname, "lastname:", lastname, "timestamp:", timestamp, "datetime:", date_time, "idCourses:", id_courses, "courseName:", course_name, "createdAt:", create_at)
+    return username, user_id, image_url, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at
 
-else:
-    print(f"Failed to fetch data. HTTP Status Code: {response.status_code}")
-
-
-save_path = "D:/mdl_work/process_image"
+username, user_id, image_url, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at = job()
+save_path = "D:/worker/Worker_2022/worker-proctoring-moodle/process_image"
 filename = f"{username}"
-# Ensure the save directory exists
+#print("Filename:", filename)
 if not os.path.exists(save_path):
     os.makedirs(save_path)
 
-# Step 1: Download the image
+# Step 1: Download the image from the URL
 current_time = time.time()
 dt = datetime.fromtimestamp(current_time)
-start_time= dt.strftime("%d-%m-%Y %H:%M:%S")
+start_time = dt.strftime("%d-%m-%Y %H:%M:%S")
 downloaded_image_path = download_image(image_url, save_path, filename)
 
+# Step 2: Detect faces in the downloaded image
 if downloaded_image_path:
-    # Step 2: Perform face recognition on the downloaded image
     detect_faces_in_image(downloaded_image_path)
-    
     current_time = time.time()
     dt2 = datetime.fromtimestamp(current_time)
-    end_time= dt.strftime("%d-%m-%Y %H:%M:%S")
+    end_time = dt.strftime("%d-%m-%Y %H:%M:%S")
     process_time = dt2 - dt
     print("Process time:", process_time)
-    # Step 3: Delete the image (if you wish to do so after processing)
-    #delete_image(downloaded_image_path)
+
+schedule.every(10).seconds.do(job)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
