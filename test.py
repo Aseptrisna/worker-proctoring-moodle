@@ -158,20 +158,20 @@ def delete_image(image_path):
 
 # URL from which to fetch the JSON data
 def job():
-url = "https://engagement.pptik.id/api/v1/proctoring/row/image"
-response = requests.get(url)
-if response.status_code == 200:
-    data = response.json()
-    user_id = data.get('userID', 'No userID provided')
-    image_url = data.get('imageURL', 'No image URL provided')
-    username = data.get('username', 'No username provided')
-    firstname = data.get('firstname', 'No firstname provided')
-    lastname = data.get('lastname', 'No lastname provided')
-    timestamp = data.get('timestamp', 'No timestamp provided')
-    date_time = data.get('datetime', 'No dateTime provided')
-    id_courses = data.get('idCourses', 'No id_courses provided')
-    course_name = data.get('courseName', 'No course_name provided')
-    create_at = data.get('createdAt', 'No createdAt provided')
+    url = "https://engagement.pptik.id/api/v1/proctoring/row/image"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        user_id = data.get('userID', 'No userID provided')
+        image_url = data.get('imageURL', 'No image URL provided')
+        username = data.get('username', 'No username provided')
+        firstname = data.get('firstname', 'No firstname provided')
+        lastname = data.get('lastname', 'No lastname provided')
+        timestamp = data.get('timestamp', 'No timestamp provided')
+        date_time = data.get('datetime', 'No dateTime provided')
+        id_courses = data.get('idCourses', 'No id_courses provided')
+        course_name = data.get('courseName', 'No course_name provided')
+        create_at = data.get('createdAt', 'No createdAt provided')
 
 else:
     print(f"Failed to fetch data. HTTP Status Code: {response.status_code}")
