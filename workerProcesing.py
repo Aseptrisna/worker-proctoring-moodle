@@ -57,10 +57,16 @@ def detect_faces_in_image(filepath):
                 known_face_names.append(os.path.splitext(filename)[0])
 
     try:
-        unknown_image = face_recognition.load_image_file(filepath)
+        full_path = download_image(image_url, save_path, filename)
+        unknown_image = face_recognition.load_image_file(full_path)
+
+        # Find all the faces and face encodings in the unknown image
         face_locations = face_recognition.face_locations(unknown_image)
         face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
+        #print (face_encodings)
+
         pil_image = Image.fromarray(unknown_image)
+        # Create a Pillow ImageDraw Draw instance to draw with
         draw = ImageDraw.Draw(pil_image)
 
         for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
