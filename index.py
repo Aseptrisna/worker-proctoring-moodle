@@ -92,10 +92,10 @@ def detect_faces_in_image(filepath):
             text_width = draw.textlength(caption)
             draw.text((left + 6, bottom - 5), caption, fill=(255, 255, 255))
             pil_image.show()
-
+            output_filename = username + "_" + timestamp
             data_to_save = {
                      "userID": user_id,
-                     "filename": f"{username}_{timestamp}.jpg",
+                     "filename": f"{output_filename}.jpg",
                      "firstname": firstname,
                      "lastname": lastname,
                      "username": username,
