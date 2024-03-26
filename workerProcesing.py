@@ -92,11 +92,10 @@ def detect_faces_in_image(filepath):
             text_width = draw.textlength(caption)
             draw.text((left + 6, bottom - 5), caption, fill=(255, 255, 255))
             pil_image.show()
-        fileName = username + "_" + timestamp +".jpg"
-        
-        data_to_save = {
+            output_filename = username + "_" + timestamp
+            data_to_save = {
                      "userID": user_id,
-                     "filename": fileName,
+                     "filename": f"{output_filename}.jpg",
                      "firstname": firstname,
                      "lastname": lastname,
                      "username": username,
@@ -118,11 +117,8 @@ def detect_faces_in_image(filepath):
         pil_image.save(output_path)
         print("Identified image saved:", output_path, "time", datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
 
-
     except PIL.UnidentifiedImageError:
         print(f"Cannot identify image file {image_url}")
-
-    
 
 def delete_image(image_path):
     if os.path.exists(image_path):
