@@ -95,7 +95,7 @@ def detect_faces_in_image(filepath):
 
             data_to_save = {
                      "userID": user_id,
-                     "filename": f"{username + "_" + timestamp}.jpg",
+                     "filename": f"{username}_{timestamp}.jpg",
                      "firstname": firstname,
                      "lastname": lastname,
                      "username": username,
