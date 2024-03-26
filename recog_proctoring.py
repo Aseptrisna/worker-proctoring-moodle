@@ -43,7 +43,7 @@ def download_image(image_url, save_path, filename):
 
 def detect_faces_in_image(filepath):
     report,log = DbConnection()
-    image_directory = "D:/mdl_work/picture"
+    image_directory = "D:/worker/Worker_2022/worker-proctoring-moodle/picture"
     # Arrays to hold face encodings and names
     known_face_encodings = []
     known_face_names = []
@@ -144,7 +144,7 @@ def detect_faces_in_image(filepath):
 
     # You can also save a copy of the new image to disk if you want by uncommenting this line
         output_filename = username + str_fdt2
-        output_path = os.path.join("C:\ASEP TRISNA SETIAWAN\RISET\worker-proctoring\identified_image", f"{output_filename}.jpg")
+        output_path = os.path.join("V:/proctoring", f"{output_filename}.jpg")
         pil_image.save(output_path)
         print("Identified image saved:", output_path, "time", datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
     
@@ -186,7 +186,7 @@ else:
     print(f"Failed to fetch data. HTTP Status Code: {response.status_code}")
 
 
-save_path = "C:\ASEP TRISNA SETIAWAN\RISET\worker-proctoring\process_image"
+save_path = "D:/worker/Worker_2022/worker-proctoring-moodle/process_image"
 filename = f"{username}"
 # Ensure the save directory exists
 if not os.path.exists(save_path):
