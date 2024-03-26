@@ -138,9 +138,11 @@ def job():
         create_at = data.get('createdAt', 'No createdAt provided')
         print("Username:", username, "userID:", user_id, "imageURL:", image_url, "firstname:", firstname, "lastname:", lastname, "timestamp:", timestamp, "datetime:", date_time, "idCourses:", id_courses, "courseName:", course_name, "createdAt:", create_at)
         save_path = "D:/worker/Worker_2022/worker-proctoring-moodle/process_image"
+        detect_faces_in_image(image_url, save_path, username, user_id, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at)
+
         if not os.path.exists(save_path):
             os.makedirs(save_path)
-        detect_faces_in_image(image_url, save_path, username, user_id, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at)
+        
 
 schedule.every(30).seconds.do(job)
 
