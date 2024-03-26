@@ -94,7 +94,7 @@ def detect_faces_in_image(filepath):
                      "filename": filename,
                      "firstname": firstname,
                      "lastname": lastname,
-                     "username": username,
+                    #  "username": username,
                      "image_url": image_url,
                      "warning": warning,
                      "timestamp": timestamp,
@@ -131,7 +131,6 @@ def job():
         username = data.get('username', 'No username provided')
         user_id = data.get('userID', 'No userID provided')
         image_url = data.get('imageURL', 'No image URL provided')
-        username = data.get('username', 'No username provided')
         firstname = data.get('firstname', 'No firstname provided')
         lastname = data.get('lastname', 'No lastname provided')
         timestamp = data.get('timestamp', 'No timestamp provided')
@@ -152,7 +151,6 @@ def job():
 
         if downloaded_image_path:
             detect_faces_in_image(downloaded_image_path)
-
             current_time = time.time()
             dt2 = datetime.fromtimestamp(current_time)
             end_time = dt.strftime("%d-%m-%Y %H:%M:%S")
