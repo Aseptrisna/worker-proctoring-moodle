@@ -102,8 +102,10 @@ def detect_faces_in_image(image_url, save_path, username, user_id, firstname, la
                      "courseName": course_name,
                      "createAt": create_at
             }
-            report.insert_one(data_to_save)
-            print("Data saved to MongoDB")
+
+        print("Run Data saved to MongoDB.......")
+        report.insert_one(data_to_save)
+        print("Data saved to MongoDB")
 
         del draw
 
@@ -150,4 +152,4 @@ schedule.every(30).seconds.do(job)
 
 while True:
     schedule.run_pending()
-    time.sleep(0)
+    time.sleep(1)
