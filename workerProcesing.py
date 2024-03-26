@@ -44,7 +44,7 @@ def download_image(image_url, save_path, filename):
 
 def detect_faces_in_image(filepath):
     report, log = DbConnection()
-    image_directory = "D:\worker\Worker_2022\worker-proctoring-moodle\picture"
+    image_directory = "D:/worker/Worker_2022/worker-proctoring-moodle/picture"
     known_face_encodings = []
     known_face_names = []
     for filename in os.listdir(image_directory):
@@ -109,7 +109,7 @@ def detect_faces_in_image(filepath):
         del draw
 
         output_filename = username + str_fdt2
-        output_path = os.path.join("V:\proctoring", f"{output_filename}.jpg")
+        output_path = os.path.join("V:/proctoring", f"{output_filename}.jpg")
         pil_image.save(output_path)
         print("Identified image saved:", output_path, "time", datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
 
@@ -141,7 +141,7 @@ def job():
     return username, user_id, image_url, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at
 
 username, user_id, image_url, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at = job()
-save_path = "D:\worker\Worker_2022\worker-proctoring-moodle\process_image"
+save_path = "D:/worker/Worker_2022/worker-proctoring-moodle/process_image"
 filename = f"{username}"
 if not os.path.exists(save_path):
     os.makedirs(save_path)
