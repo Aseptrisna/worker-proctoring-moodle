@@ -167,7 +167,7 @@ if downloaded_image_path:
     process_time = dt2 - dt
     print("Process time:", process_time)
 
-schedule.every(60).seconds.do(job)
+schedule.every(30).seconds.do(job)
 
 while True:
     schedule.run_pending()
