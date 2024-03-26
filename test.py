@@ -20,6 +20,8 @@ def DbConnection():
     collection_report = db["resultproctorings"]
     return collection_report, collection_log
 
+report, log = DbConnection()
+
 def setup_session(retry_count=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504]):
     session = requests.Session()
     retries = Retry(total=retry_count, backoff_factor=backoff_factor,
@@ -38,7 +40,8 @@ def download_image(image_url, save_path, filename):
         print(f"Failed to download the image. HTTP Status Code: {response.status_code}")
         return None
 
-def detect_faces_in_image(filepath, username, user_id, image_url, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at):
+def detect_faces_in_image(filepath):
+    report, log = DbConnection()
     image_directory = "D:/worker/Worker_2022/worker-proctoring-moodle/picture"
     known_face_encodings = []
     known_face_names = []
@@ -52,71 +55,64 @@ def detect_faces_in_image(filepath, username, user_id, image_url, firstname, las
                 known_face_names.append(os.path.splitext(filename)[0])
 
     try:
-        # Step 1: Download the image from the URL
-        current_time = time.time()
-        dt = datetime.fromtimestamp(current_time)
-        start_time = dt.strftime("%d-%m-%Y %H:%M:%S")
         full_path = download_image(image_url, save_path, filename)
+        unknown_image = face_recognition.load_image_file(full_path)
+        face_locations = face_recognition.face_locations(unknown_image)
+        face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
+        pil_image = Image.fromarray(unknown_image)
+        draw = ImageDraw.Draw(pil_image)
 
-        # Step 2: Detect faces in the downloaded image
-        if full_path:
-            unknown_image = face_recognition.load_image_file(full_path)
-            face_locations = face_recognition.face_locations(unknown_image)
-            face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
-            pil_image = Image.fromarray(unknown_image)
-            draw = ImageDraw.Draw(pil_image)
+        for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+            matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+            name = "Unknown"
+            face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+            best_match_index = np.argmin(face_distances)
+            if matches[best_match_index]:
+                name = known_face_names[best_match_index]
 
-            for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-                matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-                name = "Unknown"
-                face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-                best_match_index = np.argmin(face_distances)
-                if matches[best_match_index]:
-                    name = known_face_names[best_match_index]
-
-                    current_time = time.time()
-                    dt = datetime.fromtimestamp(current_time)
-                    fdt2 = dt.strftime("%d-%m-%Y %H:%M:%S")
-                    str_fdt2 = dt.strftime("%Y%m%d%H%M%S")
-                    print("Face detected:", user_id, firstname, lastname, "time:", fdt2)
-                else:
-                    print("No face detected")
+                current_time = time.time()
+                dt = datetime.fromtimestamp(current_time)
+                fdt2 = dt.strftime("%d-%m-%Y %H:%M:%S")
+                str_fdt2 = dt.strftime("%Y%m%d%H%M%S")
+                print("Face detected:", user_id, firstname, lastname, "time:", fdt2)
+            else:
+                print("No face detected")
+            warning = False
+            if name == username:
                 warning = False
-                if name == username:
-                    warning = False
-                else:
-                    warning = True
-                
-                draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
-                caption = fdt2 + "|" + name 
-                font = ImageFont.load_default()
-                text_width = draw.textlength(caption)
-                draw.text((left + 6, bottom - 5), caption, fill=(255, 255, 255))
-                pil_image.show()
-                output_filename = username + "_" + timestamp
-                data_to_save = {
-                        "userID": user_id,
-                        "filename": f"{output_filename}.jpg",
-                        "firstname": firstname,
-                        "lastname": lastname,
-                        "username": username,
-                        "image_url": image_url,
-                        "warning": warning,
-                        "timestamp": timestamp,
-                        "datetime": date_time,
-                        "idCourses": id_courses,
-                        "courseName": course_name,
-                        "createAt": create_at
-                }
-                report.insert_one(data_to_save)
-                print("Data saved to MongoDB")
-
-            del draw
-
+            else:
+                warning = True
+            
+            draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
+            caption = fdt2 + "|" + name 
+            font = ImageFont.load_default()
+            text_width = draw.textlength(caption)
+            draw.text((left + 6, bottom - 5), caption, fill=(255, 255, 255))
+            pil_image.show()
             output_filename = username + "_" + timestamp
-            output_path = os.path.join("V:/proctoring", f"{output_filename}.jpg")
-            pil_image.save(output_path)
-            print("Identified image saved:", output_path, "time", datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
+            data_to_save = {
+                     "userID": user_id,
+                     "filename": f"{output_filename}.jpg",
+                     "firstname": firstname,
+                     "lastname": lastname,
+                     "username": username,
+                     "image_url": image_url,
+                     "warning": warning,
+                     "timestamp": timestamp,
+                     "datetime": date_time,
+                     "idCourses": id_courses,
+                     "courseName": course_name,
+                     "createAt": create_at
+            }
+            report.insert_one(data_to_save)
+            print("Data saved to MongoDB")
+
+        del draw
+
+        output_filename = username + "_" + timestamp
+        output_path = os.path.join("V:/proctoring", f"{output_filename}.jpg")
+        pil_image.save(output_path)
+        print("Identified image saved:", output_path, "time", datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
 
     except PIL.UnidentifiedImageError:
         print(f"Cannot identify image file {image_url}")
@@ -144,5 +140,16 @@ def job():
         course_name = data.get('courseName', 'No course_name provided')
         create_at = data.get('createdAt', 'No createdAt provided')
         print("Username:", username, "userID:", user_id, "imageURL:", image_url, "firstname:", firstname, "lastname:", lastname, "timestamp:", timestamp, "datetime:", date_time, "idCourses:", id_courses, "courseName:", course_name, "createdAt:", create_at)
+    return username, user_id, image_url, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at
 
-        save_path = "D:/worker/Worker_2022/worker-proctoring"
+save_path = "D:/worker/Worker_2022/worker-proctoring-moodle/process_image"
+
+def process_job():
+    # Panggil fungsi job() untuk mendapatkan data terbaru
+    username, user_id, image_url, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at = job()
+
+    # Step 1: Download the image from the URL
+    current_time = time.time()
+    dt = datetime.fromtimestamp(current_time)
+    start_time = dt.strftime("%d-%m-%Y %H:%M:%S")
+    downloaded_image_path = download_image
