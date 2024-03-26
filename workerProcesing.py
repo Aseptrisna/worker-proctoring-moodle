@@ -106,7 +106,7 @@ def detect_faces_in_image(filepath):
         print(f"Cannot identify image file {image_url}")
     data_to_save = {
                      "userID": user_id,
-                     "filename": {output_filename}.jpg"),
+                     "filename": f"{output_filename}.jpg",
                      "firstname": firstname,
                      "lastname": lastname,
                      "username": username,
