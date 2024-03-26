@@ -103,9 +103,9 @@ def detect_faces_in_image(image_url, save_path, username, user_id, firstname, la
                      "createAt": create_at
             }
 
-                print("Run Data saved to MongoDB.......")
-                report.insert_one(data_to_save)
-                print("Data saved to MongoDB")
+            print("Run Data saved to MongoDB.......")
+            report.insert_one(data_to_save)
+            print("Data saved to MongoDB")
 
         del draw
 
