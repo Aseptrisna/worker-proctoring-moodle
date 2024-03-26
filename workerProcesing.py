@@ -44,7 +44,7 @@ def download_image(image_url, save_path, filename):
 
 def detect_faces_in_image(filepath):
     report, log = DbConnection()
-    image_directory = "D:/mdl_work/picture"
+    image_directory = "D:\worker\Worker_2022\worker-proctoring-moodle\picture"
     known_face_encodings = []
     known_face_names = []
     for filename in os.listdir(image_directory):
