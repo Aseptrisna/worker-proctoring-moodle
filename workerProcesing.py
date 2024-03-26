@@ -128,6 +128,7 @@ def job():
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
+        username = data.get('username', 'No username provided')
         user_id = data.get('userID', 'No userID provided')
         image_url = data.get('imageURL', 'No image URL provided')
         username = data.get('username', 'No username provided')
