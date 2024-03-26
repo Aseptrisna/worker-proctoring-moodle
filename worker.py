@@ -41,6 +41,7 @@ def download_image(image_url, save_path, filename):
 
 def detect_faces_in_image(image_url, save_path, username, user_id, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at):
     image_directory = "D:/worker/Worker_2022/worker-proctoring-moodle/picture"
+    print("run...2")
     known_face_encodings = []
     known_face_names = []
     for filename in os.listdir(image_directory):
@@ -138,6 +139,7 @@ def job():
         create_at = data.get('createdAt', 'No createdAt provided')
         print("Username:", username, "userID:", user_id, "imageURL:", image_url, "firstname:", firstname, "lastname:", lastname, "timestamp:", timestamp, "datetime:", date_time, "idCourses:", id_courses, "courseName:", course_name, "createdAt:", create_at)
         save_path = "D:/worker/Worker_2022/worker-proctoring-moodle/process_image"
+        print("run...1")
         detect_faces_in_image(image_url, save_path, username, user_id, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at)
 
         if not os.path.exists(save_path):
