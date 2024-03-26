@@ -102,9 +102,7 @@ def detect_faces_in_image(filepath):
         pil_image.save(output_path)
         print("Identified image saved:", output_path, "time", datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
 
-    except PIL.UnidentifiedImageError:
-        print(f"Cannot identify image file {image_url}")
-    data_to_save = {
+        data_to_save = {
                      "userID": user_id,
                      "filename": f"{output_filename}.jpg",
                      "firstname": firstname,
@@ -120,6 +118,11 @@ def detect_faces_in_image(filepath):
             }
             report.insert_one(data_to_save)
             print("Data saved to MongoDB")
+
+    except PIL.UnidentifiedImageError:
+        print(f"Cannot identify image file {image_url}")
+
+    
 
 def delete_image(image_path):
     if os.path.exists(image_path):
