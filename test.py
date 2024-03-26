@@ -182,7 +182,7 @@ filename = f"{username}"
 # Ensure the save directory exists
 if not os.path.exists(save_path):
     os.makedirs(save_path)
-
+detect_faces_in_image(image_url, save_path, username, user_id, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at)
 # Step 1: Download the image
 current_time = time.time()
 dt = datetime.fromtimestamp(current_time)
