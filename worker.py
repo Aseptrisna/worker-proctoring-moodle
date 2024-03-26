@@ -20,6 +20,8 @@ def DbConnection():
     collection_report = db["resultproctorings"]
     return collection_report, collection_log
 
+report,log = DbConnection()
+
 def setup_session(retry_count=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504]):
     session = requests.Session()
     retries = Retry(total=retry_count, backoff_factor=backoff_factor, status_forcelist=status_forcelist)
