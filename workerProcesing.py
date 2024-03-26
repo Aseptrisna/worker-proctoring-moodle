@@ -57,16 +57,10 @@ def detect_faces_in_image(filepath):
                 known_face_names.append(os.path.splitext(filename)[0])
 
     try:
-        full_path = download_image(image_url, save_path, filename)
-        unknown_image = face_recognition.load_image_file(full_path)
-
-        # Find all the faces and face encodings in the unknown image
+        unknown_image = face_recognition.load_image_file(filepath)
         face_locations = face_recognition.face_locations(unknown_image)
         face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
-        #print (face_encodings)
-
         pil_image = Image.fromarray(unknown_image)
-        # Create a Pillow ImageDraw Draw instance to draw with
         draw = ImageDraw.Draw(pil_image)
 
         for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
@@ -144,24 +138,28 @@ def job():
         id_courses = data.get('idCourses', 'No id_courses provided')
         course_name = data.get('courseName', 'No course_name provided')
         create_at = data.get('createdAt', 'No createdAt provided')
+    return username, user_id, image_url, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at
 
-        save_path = "D:\worker\Worker_2022\worker-proctoring-moodle\process_image"
-        filename = f"{username}"
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
+username, user_id, image_url, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at = job()
+save_path = "D:\worker\Worker_2022\worker-proctoring-moodle\process_image"
+filename = f"{username}"
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
 
-        current_time = time.time()
-        dt = datetime.fromtimestamp(current_time)
-        start_time = dt.strftime("%d-%m-%Y %H:%M:%S")
-        downloaded_image_path = download_image(image_url, save_path, filename)
+# Step 1: Download the image from the URL
+current_time = time.time()
+dt = datetime.fromtimestamp(current_time)
+start_time = dt.strftime("%d-%m-%Y %H:%M:%S")
+downloaded_image_path = download_image(image_url, save_path, filename)
 
-        if downloaded_image_path:
-            detect_faces_in_image(downloaded_image_path)
-            current_time = time.time()
-            dt2 = datetime.fromtimestamp(current_time)
-            end_time = dt.strftime("%d-%m-%Y %H:%M:%S")
-            process_time = dt2 - dt
-            print("Process time:", process_time)
+# Step 2: Detect faces in the downloaded image
+if downloaded_image_path:
+    detect_faces_in_image(downloaded_image_path)
+    current_time = time.time()
+    dt2 = datetime.fromtimestamp(current_time)
+    end_time = dt.strftime("%d-%m-%Y %H:%M:%S")
+    process_time = dt2 - dt
+    print("Process time:", process_time)
 
 schedule.every(10).seconds.do(job)
 
