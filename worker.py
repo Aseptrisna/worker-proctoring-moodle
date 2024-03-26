@@ -142,7 +142,7 @@ def job():
             os.makedirs(save_path)
         detect_faces_in_image(image_url, save_path, username, user_id, firstname, lastname, timestamp, date_time, id_courses, course_name, create_at)
 
-schedule.every(10).seconds.do(job)
+schedule.every(30).seconds.do(job)
 
 while True:
     schedule.run_pending()
