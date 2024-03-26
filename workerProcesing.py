@@ -94,7 +94,7 @@ def detect_faces_in_image(filepath):
                      "filename": filename,
                      "firstname": firstname,
                      "lastname": lastname,
-                    #  "username": username,
+                     "username": username,
                      "image_url": image_url,
                      "warning": warning,
                      "timestamp": timestamp,
